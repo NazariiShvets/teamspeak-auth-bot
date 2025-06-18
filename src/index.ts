@@ -36,6 +36,10 @@ export function run() {
         const CLIENT_ID_TO_URL: Record<string, string> = {};
         const CLIENT_ID_TO_WG_INFO: Record<string, { nickname: string, account_id: string }> = {};
 
+        app.get('/', (req: Request, res: Response) => {
+            res.send('Hello, world!');
+        });
+
         app.get('/a/:uniqueIdentifier', (req: Request, res: Response) => {
             const { uniqueIdentifier } = req.params;
             const url = CLIENT_ID_TO_URL[uniqueIdentifier];
