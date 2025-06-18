@@ -1,5 +1,6 @@
 import { TeamSpeak, QueryProtocol,type TeamSpeak as TeamSpeakType, ResponseError,TeamSpeakClient, TeamSpeakServerGroup } from "ts3-nodejs-library";
 import express, { Request, Response } from 'express';
+import { v4 } from "uuid";
 
 const AUTHORIZATION_CHANNEL_NAME="Authorization";
 
@@ -32,6 +33,7 @@ export function run() {
     }).then(async teamspeak => {
         const app = express();
 
+        const CLIENT_ID_TO_UUID: Record<string, string> = {};
         const CLIENT_ID_TO_TEAMSPEAK_CLIENTS: Record<string, TeamSpeakClient> = {};
         const CLIENT_ID_TO_URL: Record<string, string> = {};
         const CLIENT_ID_TO_WG_INFO: Record<string, { nickname: string, account_id: string }> = {};
@@ -40,9 +42,16 @@ export function run() {
             res.send('Hello, world!');
         });
 
-        app.get('/a/:uniqueIdentifier', (req: Request, res: Response) => {
-            const { uniqueIdentifier } = req.params;
-            const url = CLIENT_ID_TO_URL[uniqueIdentifier];
+        app.get('/a/:uuid', (req: Request, res: Response) => {
+            const { uuid } = req.params;
+            const CLIENT_ID = Object.entries(CLIENT_ID_TO_UUID).find(([_, v]) => v === uuid)?.[0];
+  
+            if(!CLIENT_ID) {
+                res.status(404).send("Client not found");
+                return;
+            }
+
+            const url = CLIENT_ID_TO_URL[CLIENT_ID];
 
             if(!url) {
                 res.status(404).send("Client not found");
@@ -52,10 +61,16 @@ export function run() {
             res.redirect(url);
         });
     
-        app.get('/success-auth/:uniqueIdentifier', async (req: Request, res: Response) => {
-            const { uniqueIdentifier } = req.params;
+        app.get('/success-auth/:uuid', async (req: Request, res: Response) => {
+            const { uuid } = req.params;
             const { nickname, account_id } = req.query as { nickname: string, account_id: string };
 
+            const uniqueIdentifier = Object.entries(CLIENT_ID_TO_UUID).find(([_, v]) => v === uuid)?.[0];
+  
+            if(!uniqueIdentifier) {
+                res.status(404).send("Client not found");
+                return;
+            }
 
             CLIENT_ID_TO_WG_INFO[uniqueIdentifier] = { nickname, account_id };
 
@@ -92,15 +107,18 @@ export function run() {
                 return;
             }
 
+            const uuid = v4();
+            CLIENT_ID_TO_UUID[client.uniqueIdentifier] = uuid;
+
             const URL_FOR_AUTH = new URL("https://api.worldoftanks.eu/wot/auth/login/");
             URL_FOR_AUTH.searchParams.set("application_id", APPLICATION_ID);
-            URL_FOR_AUTH.searchParams.set("redirect_uri", `${PUBLIC_URL}/success-auth/${client.uniqueIdentifier}`);
+            URL_FOR_AUTH.searchParams.set("redirect_uri", `${PUBLIC_URL}/success-auth/${uuid}`);
 
             CLIENT_ID_TO_TEAMSPEAK_CLIENTS[client.uniqueIdentifier] = client;
             CLIENT_ID_TO_URL[client.uniqueIdentifier] = URL_FOR_AUTH.toString();
 
             client.poke("Нажмите на ссылку на WG авторизацию");
-            client.poke(`${PUBLIC_URL}/a/${client.uniqueIdentifier}`);
+            client.poke(`${PUBLIC_URL}/a/${uuid}`);
             client.poke("Cсылка действительна в течении 1 часа"); 
          });
         
