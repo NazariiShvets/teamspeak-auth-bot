@@ -6,7 +6,7 @@ const AUTHORIZATION_CHANNEL_NAME="Authorization";
 import dotenv from "dotenv";
 dotenv.config();
 
-const PORT = 3000;
+const PORT = 80;
 
 
 const APPLICATION_ID = process.env.APPLICATION_ID!;
