@@ -1,0 +1,1 @@
+export { TeamSpeakBotService } from "./teamspeak-bot.service";
