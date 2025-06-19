@@ -105,7 +105,9 @@ export class WGAuthController {
 
             const client = await this.dbRepository.getTSClientByClientID(uniqueIdentifier);
 
-            await this.assignWN8GroupsToTSClientUsecase.execute({ accountId: account_id, tsClient: client });
+            const {recentWN8} = await this.assignWN8GroupsToTSClientUsecase.execute({ accountId: account_id, tsClient: client });
+
+            await client.edit({ clientDescription: `${nickname} (WN8: ${recentWN8})` });
 
             await client.poke(`${nickname} успешно авторизирован!`);
 
