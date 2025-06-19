@@ -33,7 +33,10 @@ export class AssignWN8GroupsToTSClientUsecase {
             .map(group => group.sgid);
 
         const possibleGroupsToRemove = relevantGroupsSgids.filter(sgid => !groupsToAdd.includes(sgid));
-        const groupsToRemove = tsClient.servergroups.filter(sgid => possibleGroupsToRemove.includes(sgid));
+
+        const DEFAULT_NORMAL_GROUP_SGID = '4';
+
+        const groupsToRemove = tsClient.servergroups.filter(sgid => possibleGroupsToRemove.includes(sgid)).filter(sgid => sgid !== DEFAULT_NORMAL_GROUP_SGID);
 
         const newGroupsToAdd = groupsToAdd.filter(groupsSgid => !tsClient.servergroups.includes(groupsSgid));
 
@@ -42,6 +45,12 @@ export class AssignWN8GroupsToTSClientUsecase {
         }
         if (newGroupsToAdd.length > 0) {
             await tsClient.addGroups(newGroupsToAdd);
+        }
+
+        return {
+            overallWN8,
+            recentWN8,
+            battlesCount,
         }
     }
 
