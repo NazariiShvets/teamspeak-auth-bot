@@ -1,5 +1,6 @@
 import { TeamSpeak, TeamSpeakClient, TeamSpeakServerGroup } from "ts3-nodejs-library";
 import { WN8Service } from "../../wn8/wn8.service";
+import { BATTLES_COUNT_GROUPS, OVERALL_WN8_GROUPS, RECENT_WN8_GROUPS } from "../../../db/seeds/groups/groups.config";
 
 export class AssignWN8GroupsToTSClientUsecase {
     constructor(
@@ -21,7 +22,7 @@ export class AssignWN8GroupsToTSClientUsecase {
         const overallWN8Group = this.getOverallWN8Group(overallWN8, serverGroups);
         const recentWN8Group = this.getRecentWN8Group(recentWN8, serverGroups, isGrow);
 
-        const relevantGroupsSgids = [this.OVERALL_WN8_GROUPS, this.RECENT_WN8_GROUPS, this.BATTLES_COUNT_GROUPS]
+        const relevantGroupsSgids = [OVERALL_WN8_GROUPS, RECENT_WN8_GROUPS, BATTLES_COUNT_GROUPS]
             .flatMap(obj => Object.values(obj))
             .map(groupName => serverGroups.find(group => group.name === groupName))
             .filter((group): group is TeamSpeakServerGroup => !!group)
@@ -46,22 +47,38 @@ export class AssignWN8GroupsToTSClientUsecase {
 
     private getBattlesCountGroup(battlesCount: number, groups: TeamSpeakServerGroup[]): TeamSpeakServerGroup | null {
         for (const count of [
-            { count: 5000, group: this.BATTLES_COUNT_GROUPS.lessThan5k },
-            { count: 15000, group: this.BATTLES_COUNT_GROUPS.moreThan5k },
-            { count: 30000, group: this.BATTLES_COUNT_GROUPS.moreThan15k },
-            { count: 45000, group: this.BATTLES_COUNT_GROUPS.moreThan30k }
+            { count: 4999, group: BATTLES_COUNT_GROUPS.lessThan5k },
+            { count: 5000, group: BATTLES_COUNT_GROUPS.moreThan5k },
+            { count: 10000, group: BATTLES_COUNT_GROUPS.moreThan10k },
+            { count: 15000, group: BATTLES_COUNT_GROUPS.moreThan15k },
+            { count: 20000, group: BATTLES_COUNT_GROUPS.moreThan20k },
+            { count: 25000, group: BATTLES_COUNT_GROUPS.moreThan25k },
+            { count: 30000, group: BATTLES_COUNT_GROUPS.moreThan30k },
+            { count: 35000, group: BATTLES_COUNT_GROUPS.moreThan35k },
+            { count: 40000, group: BATTLES_COUNT_GROUPS.moreThan40k },
+            { count: 45000, group: BATTLES_COUNT_GROUPS.moreThan45k },
+            { count: 50000, group: BATTLES_COUNT_GROUPS.moreThan50k },
+            { count: 55000, group: BATTLES_COUNT_GROUPS.moreThan55k },
+            { count: 60000, group: BATTLES_COUNT_GROUPS.moreThan60k },
+            { count: 65000, group: BATTLES_COUNT_GROUPS.moreThan65k },
+            { count: 70000, group: BATTLES_COUNT_GROUPS.moreThan70k },
+            { count: 75000, group: BATTLES_COUNT_GROUPS.moreThan75k },
+            { count: 80000, group: BATTLES_COUNT_GROUPS.moreThan80k },
+            { count: 85000, group: BATTLES_COUNT_GROUPS.moreThan85k },
+            { count: 90000, group: BATTLES_COUNT_GROUPS.moreThan90k },
         ]) {
             if (battlesCount < count.count) {
-                return groups.find(group => group.name === count.group) ?? null;
+                return groups.find(group => group.name === count.group.name) ?? null;
             }
         }
-        return groups.find(group => group.name === this.BATTLES_COUNT_GROUPS.moreThan45k) ?? null;
+
+        return groups.find(group => group.name === BATTLES_COUNT_GROUPS.moreThan95k.name) ?? null;
     }
 
     private getOverallWN8Group(overallWN8: number, groups: TeamSpeakServerGroup[]): TeamSpeakServerGroup | null {
         for (const [name, group] of entries(this.WN8_GROUP_NAME_TO_NUMBER)) {
             if (overallWN8 > group.from && overallWN8 < group.to) {
-                const groupName = this.OVERALL_WN8_GROUPS[name];
+                const groupName = OVERALL_WN8_GROUPS[name].name;
 
                 return groups.find(group => group.name === groupName) ?? null;
             }
@@ -73,8 +90,8 @@ export class AssignWN8GroupsToTSClientUsecase {
     private getRecentWN8Group(recentWN8: number, groups: TeamSpeakServerGroup[], isGrow: boolean): TeamSpeakServerGroup | null {
         for (const [name, group] of entries(this.WN8_GROUP_NAME_TO_NUMBER)) {
             if (recentWN8 > group.from && recentWN8 < group.to) {
-                const groupKey = (isGrow ? `${name}_grow` : `${name}_fall`) as `${typeof name}_${'grow' | 'fall'}`;
-                const groupName = this.RECENT_WN8_GROUPS[groupKey];
+                const groupKey = (isGrow ? `${name}_up` : `${name}_down`) as `${typeof name}_${'up' | 'down'}`;
+                const groupName = RECENT_WN8_GROUPS[groupKey].name;
 
                 return groups.find(group => group.name === groupName) ?? null;
             }
@@ -110,37 +127,7 @@ export class AssignWN8GroupsToTSClientUsecase {
         },
     } as const;
 
-    private OVERALL_WN8_GROUPS = {
-        purple: '╠• Уникальный Игрок',
-        blue: '╠• Отличный Игрок',
-        green: '╠• Хороший Игрок',
-        yellow: '╠• Нормальный Игрок',
-        orange: '╠• Игрок Ниже Среднего',
-        red: '╠• Твинк либо Плохой Игрок',
-    } as const;
-
-    private RECENT_WN8_GROUPS = {
-        purple_grow: '╠• Фиолет, растет',
-        purple_fall: '╠• Фиолет, сливает',
-        blue_grow: '╠• Бирюза, растет',
-        blue_fall: '╠• Бирюза, сливает',
-        green_grow: '╠• Зеленый, растет',
-        green_fall: '╠• Зеленый, сливает',
-        yellow_grow: '╠• Желтый, растет',
-        yellow_fall: '╠• Желтый, сливает',
-        orange_grow: '╠• Рыжий, растет',
-        orange_fall: '╠• Рыжий,  сливает',
-        red_grow: '╠• Красный, растет',
-        red_fall: '╠• Красный, сливает',
-    } as const;
-
-    private BATTLES_COUNT_GROUPS = {
-        lessThan5k: '╠• Менее 5к боев',
-        moreThan5k: '╠• Более 5к боев',
-        moreThan15k: '╠• Более 15к боев',
-        moreThan30k: '╠• Более 30к боев',
-        moreThan45k: '╠• Более 45к боев',
-    } as const;
+   
 }
 
 type AssignGroupsToTSClientBasedOnWN8UsecaseArgs = {

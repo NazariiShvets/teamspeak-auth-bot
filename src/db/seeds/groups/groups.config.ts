@@ -1,0 +1,46 @@
+export const OVERALL_WN8_GROUPS = {
+    purple: { name: '╠• Уникальный Игрок', iconPath: './resources/overall_xvm/purple.png' },
+    blue: { name: '╠• Отличный Игрок', iconPath: './resources/overall_xvm/blue.png' },
+    green: { name: '╠• Хороший Игрок', iconPath: './resources/overall_xvm/green.png' },
+    yellow: { name: '╠• Нормальный Игрок', iconPath: './resources/overall_xvm/yellow.png' },
+    orange: { name: '╠• Игрок Ниже Среднего', iconPath: './resources/overall_xvm/orange.png' },
+    red: { name: '╠• Твинк либо Плохой Игрок', iconPath: './resources/overall_xvm/red.png' },
+} as const;
+
+export const RECENT_WN8_GROUPS = {
+    purple_up: { name: '╠• Фиолет, растет', iconPath: './resources/recent_xvm/purple_up.png' },
+    purple_down: { name: '╠• Фиолет, сливает', iconPath: './resources/recent_xvm/purple_down.png' },
+    blue_up: { name: '╠• Бирюза, растет', iconPath: './resources/recent_xvm/blue_up.png' },
+    blue_down: { name: '╠• Бирюза, сливает', iconPath: './resources/recent_xvm/blue_down.png' },
+    green_up: { name: '╠• Зеленый, растет', iconPath: './resources/recent_xvm/green_up.png' },
+    green_down: { name: '╠• Зеленый, сливает', iconPath: './resources/recent_xvm/green_down.png' },
+    yellow_up: { name: '╠• Желтый, растет', iconPath: './resources/recent_xvm/yellow_up.png' },
+    yellow_down: { name: '╠• Желтый, сливает', iconPath: './resources/recent_xvm/yellow_down.png' },
+    orange_up: { name: '╠• Рыжий, растет', iconPath: './resources/recent_xvm/orange_up.png' },
+    orange_down: { name: '╠• Рыжий,  сливает', iconPath: './resources/recent_xvm/orange_down.png' },
+    red_up: { name: '╠• Красный, растет', iconPath: './resources/recent_xvm/red_up.png' },
+    red_down: { name: '╠• Красный, сливает', iconPath: './resources/recent_xvm/red_down.png' },
+} as const;
+
+export const BATTLES_COUNT_GROUPS = {
+    lessThan5k: { name: '╠• Менее 5к боев', iconPath: './resources/battles/battles_5-.png' },
+    moreThan5k: { name: '╠• Более 5к боев', iconPath: './resources/battles/battles_5+.png' },
+    moreThan10k: { name: '╠• Более 10к боев', iconPath: './resources/battles/battles_10.png' },
+    moreThan15k: { name: '╠• Более 15к боев', iconPath: './resources/battles/battles_15.png' },
+    moreThan20k: { name: '╠• Более 20к боев', iconPath: './resources/battles/battles_20.png' },
+    moreThan25k: { name: '╠• Более 25к боев', iconPath: './resources/battles/battles_25.png' },
+    moreThan30k: { name: '╠• Более 30к боев', iconPath: './resources/battles/battles_30.png' },
+    moreThan35k: { name: '╠• Более 35к боев', iconPath: './resources/battles/battles_35.png' },
+    moreThan40k: { name: '╠• Более 40к боев', iconPath: './resources/battles/battles_40.png' },
+    moreThan45k: { name: '╠• Более 45к боев', iconPath: './resources/battles/battles_45.png' },
+    moreThan50k: { name: '╠• Более 50к боев', iconPath: './resources/battles/battles_50.png' },
+    moreThan55k: { name: '╠• Более 55к боев', iconPath: './resources/battles/battles_55.png' },
+    moreThan60k: { name: '╠• Более 60к боев', iconPath: './resources/battles/battles_60.png' },
+    moreThan65k: { name: '╠• Более 65к боев', iconPath: './resources/battles/battles_65.png' },
+    moreThan70k: { name: '╠• Более 70к боев', iconPath: './resources/battles/battles_70.png' },
+    moreThan75k: { name: '╠• Более 75к боев', iconPath: './resources/battles/battles_75.png' },
+    moreThan80k: { name: '╠• Более 80к боев', iconPath: './resources/battles/battles_80.png' },
+    moreThan85k: { name: '╠• Более 85к боев', iconPath: './resources/battles/battles_85.png' },
+    moreThan90k: { name: '╠• Более 90к боев', iconPath: './resources/battles/battles_90.png' },
+    moreThan95k: { name: '╠• Более 95к боев', iconPath: './resources/battles/battles_95.png' },
+} as const;

@@ -1,11 +1,9 @@
 import { Request, Response, Application } from "express";
-import { TeamSpeak } from "ts3-nodejs-library";
 
 import { InMemoryDBRepository, TeamSpeakChannelRepository } from "../../db";
 import { ConfigService } from "../../config";
 import z from "zod";
 import { LoggerService } from "../../logger.service";
-import { WN8Service } from "../wn8/wn8.service";
 import { AssignWN8GroupsToTSClientUsecase } from "./usecases/assign-wn8-groups-to-ts-client.usecase";
 
 const RedirectToWGAuthRouteParamsSchema = z.object({

@@ -8,6 +8,7 @@ import { TomatoWN8StatsService } from "./modules/wn8/tomato-wn8.service";
 import { WGAuthController } from "./modules/wg-auth/wg-auth.controller";
 import { WebServerService } from "./server/webserver.service";
 import { AssignWN8GroupsToTSClientUsecase } from "./modules/wg-auth/usecases/assign-wn8-groups-to-ts-client.usecase";
+import GroupsSeeder from "./db/seeds/groups/groups.seeder";
 
 export async function run() {
     const configService = new ConfigService();
@@ -21,6 +22,9 @@ export async function run() {
     const wn8Service = new TomatoWN8StatsService(configService);
 
     const teamspeakServer = await teamspeakBotService.connect();
+
+    const groupsSeeder = new GroupsSeeder(teamspeakServer, logger);
+    await groupsSeeder.seed();
 
     const teamSpeakChannelRepository = new TeamSpeakChannelRepository(teamspeakServer, logger);
     await teamSpeakChannelRepository.loadChannels();
