@@ -43,6 +43,11 @@ export const EnvConfigSchema = z.object({
         .coerce.number()
         .default(3000)
         .describe("The port for the local server to run on. Default port is 3000"),
+
+    WN8_REGION: z
+        .enum(["eu", "com", "asia"])
+        .default("eu")
+        .describe("The region for the WN8 stats. Default region is eu"),
 });
 
 export type EnvConfig = z.infer<typeof EnvConfigSchema>;

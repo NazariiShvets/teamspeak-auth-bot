@@ -1,11 +1,13 @@
 import { ConfigService } from "./config";
-import { WebServerService } from "./server";
 import { TeamSpeakBotService } from "./bot";
 
 import { logger } from "./logger.service";
-import { PokeClientWithLinkForWGAuthUsecase } from "./usecases/poke-client-with-link-for-wg-auth.usecase";
-import { WGAuthController } from "./server/wg-auth";
+import { PokeClientWithLinkForWGAuthUsecase } from "./modules/wg-auth/usecases/poke-client-with-link-for-wg-auth.usecase";
 import { InMemoryDBRepository, TeamSpeakChannelRepository } from "./db";
+import { TomatoWN8StatsService } from "./modules/wn8/tomato-wn8.service";
+import { WGAuthController } from "./modules/wg-auth/wg-auth.controller";
+import { WebServerService } from "./server/webserver.service";
+import { AssignWN8GroupsToTSClientUsecase } from "./modules/wg-auth/usecases/assign-wn8-groups-to-ts-client.usecase";
 
 export async function run() {
     const configService = new ConfigService();
@@ -16,6 +18,8 @@ export async function run() {
         configService,
     );
 
+    const wn8Service = new TomatoWN8StatsService(configService);
+
     const teamspeakServer = await teamspeakBotService.connect();
 
     const teamSpeakChannelRepository = new TeamSpeakChannelRepository(teamspeakServer, logger);
@@ -24,7 +28,12 @@ export async function run() {
     const webserverService = new WebServerService(
         logger,
         configService,
-        new WGAuthController(teamspeakServer, dbRepository, teamSpeakChannelRepository, logger)
+        new WGAuthController(
+            dbRepository,
+            teamSpeakChannelRepository,
+            logger,
+            new AssignWN8GroupsToTSClientUsecase(wn8Service, teamspeakServer)
+        )
     );
 
     await webserverService.start();

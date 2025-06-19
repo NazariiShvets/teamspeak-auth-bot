@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 
 import { ConfigService } from "../config";
 import { LoggerService } from "../logger.service";
-import { WGAuthController } from './wg-auth';
+import { WGAuthController } from "../modules/wg-auth/wg-auth.controller";
 
 export class WebServerService {
     constructor(

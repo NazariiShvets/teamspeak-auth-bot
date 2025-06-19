@@ -1,10 +1,10 @@
 import { TeamSpeakClient } from "ts3-nodejs-library";
 import { v4 } from "uuid";
 
-import { ConfigService } from "../config";
-import { InMemoryDBRepository } from "../db";
-import { WGAuthController } from "../server/wg-auth";
-import { LoggerService } from "../logger.service";
+import { ConfigService } from "../../../config";
+import { InMemoryDBRepository } from "../../../db";
+import { WGAuthController } from "../wg-auth.controller";
+import { LoggerService } from "../../../logger.service";
 
 export type GenerateLinkForWGAuthUsecaseArgs = {
     tsClient: TeamSpeakClient;
@@ -34,9 +34,9 @@ export class PokeClientWithLinkForWGAuthUsecase {
 
         const link = WGAuthController.ROUTES.redirectToWGAuthRoute.createUrl(this.configService, { uuid });
 
-        tsClient.poke("Нажмите на ссылку на WG авторизацию");
+        // tsClient.poke("Нажмите на ссылку на WG авторизацию");
         tsClient.poke(link);
-        tsClient.poke("Cсылка действительна в течении 1 часа");
+        // tsClient.poke("Cсылка действительна в течении 1 часа");
 
         this.logger.info(`[PokeClientWithLinkForWGAuthUsecase] Poked client ${tsClient.nickname} with link for WG Auth`);
     }

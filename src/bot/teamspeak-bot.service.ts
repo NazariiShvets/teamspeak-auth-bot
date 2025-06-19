@@ -2,7 +2,7 @@ import { TeamSpeak } from "ts3-nodejs-library";
 
 import { ConfigService } from "../config";
 import { LoggerService } from "../logger.service";
-import { PokeClientWithLinkForWGAuthUsecase } from "../usecases/poke-client-with-link-for-wg-auth.usecase";
+import { PokeClientWithLinkForWGAuthUsecase } from "../modules/wg-auth/usecases/poke-client-with-link-for-wg-auth.usecase";
 import { TeamSpeakChannelRepository } from "../db";
 
 export class TeamSpeakBotService {

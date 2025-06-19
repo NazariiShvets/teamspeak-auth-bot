@@ -42,7 +42,6 @@ class InMemoryDBRepository {
     private readonly CLIENT_ID_TO_UUID: Record<string, string> = {};
     private readonly CLIENT_ID_TO_TEAMSPEAK_CLIENTS: Record<string, TeamSpeakClient> = {};
     private readonly CLIENT_ID_TO_URL: Record<string, string> = {};
-    private readonly CLIENT_ID_TO_WG_INFO: Record<string, { nickname: string, account_id: string }> = {};
 
     public async getTsClientUniqueIDByUUID(uuid: string) {
         return this.CLIENT_ID_TO_UUID[uuid];
@@ -52,13 +51,18 @@ class InMemoryDBRepository {
         return this.CLIENT_ID_TO_TEAMSPEAK_CLIENTS[clientID];
     }
 
+    public async removeTSClientByClientID(clientID: string) {
+        delete this.CLIENT_ID_TO_TEAMSPEAK_CLIENTS[clientID];
+    }
+
     public async getURLByTsClientUniqueID(clientID: string) {
         return this.CLIENT_ID_TO_URL[clientID];
     }
 
-    public async getWGInfoByClientID(clientID: string) {
-        return this.CLIENT_ID_TO_WG_INFO[clientID];
+    public async removeURLByTsClientUniqueID(clientID: string) {
+        delete this.CLIENT_ID_TO_URL[clientID];
     }
+
 
     public async setUUIDByTSClientUniqueIdentifier(args: { uniqueIdentifier: string, uuid: string }) {
         this.CLIENT_ID_TO_UUID[args.uuid] = args.uniqueIdentifier;
@@ -70,10 +74,6 @@ class InMemoryDBRepository {
 
     public async setURLByClientID(clientID: string, url: string) {
         this.CLIENT_ID_TO_URL[clientID] = url;
-    }
-
-    public async setWGInfoByClientID(clientID: string, wgInfo: { nickname: string, account_id: string }) {
-        this.CLIENT_ID_TO_WG_INFO[clientID] = wgInfo;
     }
 }
 

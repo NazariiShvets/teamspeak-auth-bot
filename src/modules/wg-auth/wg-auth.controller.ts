@@ -5,6 +5,8 @@ import { InMemoryDBRepository, TeamSpeakChannelRepository } from "../../db";
 import { ConfigService } from "../../config";
 import z from "zod";
 import { LoggerService } from "../../logger.service";
+import { WN8Service } from "../wn8/wn8.service";
+import { AssignWN8GroupsToTSClientUsecase } from "./usecases/assign-wn8-groups-to-ts-client.usecase";
 
 const RedirectToWGAuthRouteParamsSchema = z.object({
     uuid: z.string().uuid(),
@@ -20,10 +22,10 @@ const SuccessWGAuthRouteQuerySchema = z.object({
 
 export class WGAuthController {
     constructor(
-        private readonly teamspeakServer: TeamSpeak,  
-        private readonly dbRepository: InMemoryDBRepository,   
+        private readonly dbRepository: InMemoryDBRepository,
         private readonly teamSpeakChannelRepository: TeamSpeakChannelRepository,
-        private readonly logger: LoggerService
+        private readonly logger: LoggerService,
+        private readonly assignWN8GroupsToTSClientUsecase: AssignWN8GroupsToTSClientUsecase
     ) { }
 
     public static ROUTES = {
@@ -51,7 +53,7 @@ export class WGAuthController {
         app.get(WGAuthController.ROUTES.redirectToWGAuthRoute.path, async (req: Request, res: Response) => {
             const params = RedirectToWGAuthRouteParamsSchema.safeParse(req.params);
 
-            if(!params.success) {
+            if (!params.success) {
                 res.status(400).send("Param must be uuid");
                 return;
             }
@@ -59,11 +61,11 @@ export class WGAuthController {
             const { uuid } = params.data;
 
             const tsClientUniqueID = await this.dbRepository.getTsClientUniqueIDByUUID(uuid);
-            
-            if (!tsClientUniqueID) {    
+
+            if (!tsClientUniqueID) {
                 res.status(404).send("Client not found");
                 return;
-            }   
+            }
 
             const url = await this.dbRepository.getURLByTsClientUniqueID(tsClientUniqueID);
 
@@ -80,7 +82,7 @@ export class WGAuthController {
         app.get(WGAuthController.ROUTES.successWGAuthRoute.path, async (req: Request, res: Response) => {
             const params = SuccessWGAuthRouteParamsSchema.safeParse(req.params);
 
-            if(!params.success) {
+            if (!params.success) {
                 res.status(400).send("Param must be uuid");
                 return;
             }
@@ -89,7 +91,7 @@ export class WGAuthController {
 
             const query = SuccessWGAuthRouteQuerySchema.safeParse(req.query);
 
-            if(!query.success) {
+            if (!query.success) {
                 res.status(400).send("Query from WG Auth doesn't contain nickname or account_id");
                 return;
             }
@@ -103,33 +105,18 @@ export class WGAuthController {
                 return;
             }
 
-            await this.dbRepository.setWGInfoByClientID(uniqueIdentifier, { nickname, account_id });
-
             const client = await this.dbRepository.getTSClientByClientID(uniqueIdentifier);
-            const groups = await this.teamspeakServer.serverGroupList();
-            const WN8 = 2200;
-            const groupsWithWN8 = [
-                { condition: WN8 < 500, group: 'Рак' },
-                { condition: WN8 < 900, group: 'Говно' },
-                { condition: WN8 < 1700, group: 'Моча' },
-                { condition: WN8 < 2700, group: 'Зелень' },
-                { condition: WN8 < 3650, group: 'Бірюза' },
-                { condition: WN8 >= 3650, group: 'Фіолет' }
-            ];
 
-            const resolvedGroup = groupsWithWN8.find(group => group.condition);
+            await this.assignWN8GroupsToTSClientUsecase.execute({ accountId: account_id, tsClient: client });
 
-            if (resolvedGroup) {
-                const group = groups.find(group => group.name === resolvedGroup.group)!;
-                await client.addGroups([group]);
-                await client.poke(`${nickname} успешно авторизирован!`);
-                const defaultChannel  = this.teamSpeakChannelRepository.getDefaultChannel();
-                
-                if (defaultChannel) {
-                    await client.move(defaultChannel);
-                }else {
-                    this.logger.error(`[WGAuthController] Authorization channel not found`);
-                }
+            await client.poke(`${nickname} успешно авторизирован!`);
+
+            const defaultChannel = this.teamSpeakChannelRepository.getDefaultChannel();
+
+            if (defaultChannel) {
+                await client.move(defaultChannel);
+            } else {
+                this.logger.error(`[WGAuthController] Authorization channel not found`);
             }
 
 
