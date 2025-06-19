@@ -36,8 +36,12 @@ export class AssignWN8GroupsToTSClientUsecase {
 
         const newGroupsToAdd = groupsToAdd.filter(groupsSgid => !tsClient.servergroups.includes(groupsSgid));
 
-        await tsClient.delGroups(groupsToRemove);
-        await tsClient.addGroups(newGroupsToAdd);
+        if (groupsToRemove.length > 0) {
+            await tsClient.delGroups(groupsToRemove);
+        }
+        if (newGroupsToAdd.length > 0) {
+            await tsClient.addGroups(newGroupsToAdd);
+        }
     }
 
     private getBattlesCountGroup(battlesCount: number, groups: TeamSpeakServerGroup[]): TeamSpeakServerGroup | null {

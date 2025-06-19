@@ -34,9 +34,9 @@ export class PokeClientWithLinkForWGAuthUsecase {
 
         const link = WGAuthController.ROUTES.redirectToWGAuthRoute.createUrl(this.configService, { uuid });
 
-        // tsClient.poke("Нажмите на ссылку на WG авторизацию");
+        tsClient.poke("Нажмите на ссылку на WG авторизацию");
         tsClient.poke(link);
-        // tsClient.poke("Cсылка действительна в течении 1 часа");
+        tsClient.poke("Cсылка действительна в течении 1 часа");
 
         this.logger.info(`[PokeClientWithLinkForWGAuthUsecase] Poked client ${tsClient.nickname} with link for WG Auth`);
     }
